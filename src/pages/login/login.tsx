@@ -1,14 +1,13 @@
 import { FC, SyntheticEvent, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { LoginUI } from '@ui-pages';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useAppSelector } from '../../services/store';
 import { getIsAuthenticated, loginUser } from '../../components/state-managers';
 export const Login: FC = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const storeDispatch = useDispatch();
-  const userIsAuthenticated = useSelector(getIsAuthenticated);
+  const userIsAuthenticated = useAppSelector(getIsAuthenticated);
   const processLogin = (e: SyntheticEvent) => {
     e.preventDefault();
     if (!userEmail || !userPassword) {

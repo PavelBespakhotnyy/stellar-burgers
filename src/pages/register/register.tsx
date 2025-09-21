@@ -1,8 +1,7 @@
 import { FC, SyntheticEvent, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
 import { RegisterUI } from '@ui-pages';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useAppSelector } from '../../services/store';
 import {
   getLoginUserRequest,
   registerUser
@@ -12,7 +11,7 @@ export const Register: FC = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const storeDispatch = useDispatch();
-  const isProcessing = useSelector(getLoginUserRequest);
+  const isProcessing = useAppSelector(getLoginUserRequest);
   const processRegistration = (e: SyntheticEvent) => {
     e.preventDefault();
     storeDispatch(

@@ -1,9 +1,8 @@
 import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
 import { TOrder } from '@utils-types';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useAppSelector } from '../../services/store';
 import {
   fetchAllFeeds,
   getFeedLoading,
@@ -11,8 +10,8 @@ import {
 } from '../../components/state-managers';
 export const Feed: FC = () => {
   const storeDispatch = useDispatch();
-  const isLoading = useSelector(getFeedLoading);
-  const feedOrders: TOrder[] = useSelector(getFeedOrders);
+  const isLoading = useAppSelector(getFeedLoading);
+  const feedOrders: TOrder[] = useAppSelector(getFeedOrders);
   useEffect(() => {
     storeDispatch(fetchAllFeeds());
   }, [storeDispatch]);
