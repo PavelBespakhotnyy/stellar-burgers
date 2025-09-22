@@ -1,40 +1,35 @@
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { resetPasswordApi } from '@api';
 import { ResetPasswordUI } from '@ui-pages';
-
 export const ResetPassword: FC = () => {
-  const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
-  const [error, setError] = useState<Error | null>(null);
-
-  const handleSubmit = (e: SyntheticEvent) => {
+  const router = useNavigate();
+  const [newPassword, setNewPassword] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [apiError, setApiError] = useState<Error | null>(null);
+  const processPasswordReset = (e: SyntheticEvent) => {
     e.preventDefault();
-    setError(null);
-    resetPasswordApi({ password, token })
+    setApiError(null);
+    resetPasswordApi({ password: newPassword, token: resetToken })
       .then(() => {
         localStorage.removeItem('resetPassword');
-        navigate('/login');
+        router('/login');
       })
-      .catch((err) => setError(err));
+      .catch((err) => setApiError(err));
   };
-
   useEffect(() => {
     if (!localStorage.getItem('resetPassword')) {
-      navigate('/forgot-password', { replace: true });
+      router('/forgot-password', { replace: true });
     }
-  }, [navigate]);
-
+  }, [router]);
   return (
     <ResetPasswordUI
-      errorText={error?.message}
-      password={password}
-      token={token}
-      setPassword={setPassword}
-      setToken={setToken}
-      handleSubmit={handleSubmit}
+      errorText={apiError?.message}
+      password={newPassword}
+      token={resetToken}
+      setPassword={setNewPassword}
+      setToken={setResetToken}
+      handleSubmit={processPasswordReset}
     />
   );
 };

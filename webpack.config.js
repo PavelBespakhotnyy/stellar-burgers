@@ -2,8 +2,7 @@ const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
-
-module.exports = {
+const webpackConfiguration = {
   entry: path.resolve(__dirname, './src/index.tsx'),
   module: {
     rules: [
@@ -89,6 +88,8 @@ module.exports = {
     static: path.join(__dirname, './dist'),
     compress: true,
     historyApiFallback: true,
-    port: 4000
+    port: 4000,
+    open: true
   }
 };
+module.exports = webpackConfiguration;

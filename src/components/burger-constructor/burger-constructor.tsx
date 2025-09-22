@@ -1,45 +1,56 @@
 import { FC, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-
+import { useDispatch, useAppSelector } from '../../services/store';
+import {
+  getConstructorItems,
+  getOrderModalData,
+  getOrderRequest,
+  getIsAuthenticated,
+  createBurgerOrder,
+  clearOrderData
+} from '../state-managers';
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-  const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
+  const router = useNavigate();
+  const storeDispatch = useDispatch();
+  const selectedItems = useAppSelector(getConstructorItems);
+  const orderLoading = useAppSelector(getOrderRequest);
+  const orderData = useAppSelector(getOrderModalData);
+  const userAuthenticated = useAppSelector(getIsAuthenticated);
+  const handleOrderClick = () => {
+    if (!userAuthenticated) {
+      return router('/login');
+    }
+    if (!selectedItems.bun || orderLoading) return;
+    const orderIds = [
+      selectedItems.bun._id,
+      ...selectedItems.ingredients.map((item) => item._id),
+      selectedItems.bun._id
+    ];
+    storeDispatch(createBurgerOrder(orderIds));
   };
-
-  const orderRequest = false;
-
-  const orderModalData = null;
-
-  const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
+  const handleCloseModal = () => {
+    storeDispatch(clearOrderData());
+    router('/');
   };
-  const closeOrderModal = () => {};
-
-  const price = useMemo(
+  const totalPrice = useMemo(
     () =>
-      (constructorItems.bun ? constructorItems.bun.price * 2 : 0) +
-      constructorItems.ingredients.reduce(
-        (s: number, v: TConstructorIngredient) => s + v.price,
+      (selectedItems.bun ? selectedItems.bun.price * 2 : 0) +
+      selectedItems.ingredients.reduce(
+        (sum: number, item: TConstructorIngredient) => sum + item.price,
         0
       ),
-    [constructorItems]
+    [selectedItems]
   );
-
-  return null;
-
   return (
     <BurgerConstructorUI
-      price={price}
-      orderRequest={orderRequest}
-      constructorItems={constructorItems}
-      orderModalData={orderModalData}
-      onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      price={totalPrice}
+      orderRequest={orderLoading}
+      constructorItems={selectedItems}
+      orderModalData={orderData}
+      onOrderClick={handleOrderClick}
+      closeOrderModal={handleCloseModal}
     />
   );
 };
