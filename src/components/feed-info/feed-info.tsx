@@ -12,7 +12,11 @@ export const FeedInfo: FC = () => {
   const allOrders: TOrder[] = useAppSelector(getFeedOrders);
   const totalOrders = useAppSelector(getTotal);
   const todayOrders = useAppSelector(getTotalToday);
-  const feedStatistics = { total: totalOrders, totalToday: todayOrders };
+  const feedStatistics = {
+    orders: allOrders,
+    total: totalOrders,
+    totalToday: todayOrders
+  };
   const completedOrders = extractOrderNumbers(allOrders, 'done');
   const inProgressOrders = extractOrderNumbers(allOrders, 'pending');
   return (
