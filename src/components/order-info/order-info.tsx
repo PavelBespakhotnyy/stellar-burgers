@@ -1,67 +1,60 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { useDispatch, useAppSelector } from '../../services/store';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
-
+import {
+  getIngredientsSelector,
+  getCurrentOrder,
+  fetchUserOrderByNumber
+} from '../state-managers';
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
-
-  const ingredients: TIngredient[] = [];
-
-  /* Готовим данные для отображения */
-  const orderInfo = useMemo(() => {
-    if (!orderData || !ingredients.length) return null;
-
-    const date = new Date(orderData.createdAt);
-
+  const { number } = useParams();
+  const storeDispatch = useDispatch();
+  const currentOrder = useAppSelector(getCurrentOrder);
+  const allIngredients: TIngredient[] = useAppSelector(getIngredientsSelector);
+  useEffect(() => {
+    storeDispatch(fetchUserOrderByNumber(Number(number)));
+  }, [storeDispatch, number]);
+  const processedOrderData = useMemo(() => {
+    if (!currentOrder || !allIngredients.length) return null;
+    const orderDate = new Date(currentOrder.createdAt);
     type TIngredientsWithCount = {
       [key: string]: TIngredient & { count: number };
     };
-
-    const ingredientsInfo = orderData.ingredients.reduce(
-      (acc: TIngredientsWithCount, item) => {
-        if (!acc[item]) {
-          const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
+    const ingredientsWithCount = currentOrder.ingredients.reduce(
+      (acc: TIngredientsWithCount, itemId) => {
+        if (!acc[itemId]) {
+          const foundIngredient = allIngredients.find(
+            (ing) => ing._id === itemId
+          );
+          if (foundIngredient) {
+            acc[itemId] = {
+              ...foundIngredient,
               count: 1
             };
           }
         } else {
-          acc[item].count++;
+          acc[itemId].count++;
         }
-
         return acc;
       },
       {}
     );
-
-    const total = Object.values(ingredientsInfo).reduce(
+    const orderTotal = Object.values(ingredientsWithCount).reduce(
       (acc, item) => acc + item.price * item.count,
       0
     );
-
     return {
-      ...orderData,
-      ingredientsInfo,
-      date,
-      total
+      ...currentOrder,
+      ingredientsInfo: ingredientsWithCount,
+      date: orderDate,
+      total: orderTotal
     };
-  }, [orderData, ingredients]);
-
-  if (!orderInfo) {
+  }, [currentOrder, allIngredients]);
+  if (!processedOrderData) {
     return <Preloader />;
   }
-
-  return <OrderInfoUI orderInfo={orderInfo} />;
+  return <OrderInfoUI orderInfo={processedOrderData} />;
 };

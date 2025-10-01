@@ -1,22 +1,31 @@
 import { FC, SyntheticEvent, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { LoginUI } from '@ui-pages';
-
+import { useDispatch, useAppSelector } from '../../services/store';
+import { getIsAuthenticated, loginUser } from '../../components/state-managers';
 export const Login: FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = (e: SyntheticEvent) => {
+  const [userEmail, setUserEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const storeDispatch = useDispatch();
+  const userIsAuthenticated = useAppSelector(getIsAuthenticated);
+  const processLogin = (e: SyntheticEvent) => {
     e.preventDefault();
+    if (!userEmail || !userPassword) {
+      return;
+    }
+    storeDispatch(loginUser({ email: userEmail, password: userPassword }));
   };
-
+  if (userIsAuthenticated) {
+    return <Navigate to={'/'} />;
+  }
   return (
     <LoginUI
       errorText=''
-      email={email}
-      setEmail={setEmail}
-      password={password}
-      setPassword={setPassword}
-      handleSubmit={handleSubmit}
+      email={userEmail}
+      setEmail={setUserEmail}
+      password={userPassword}
+      setPassword={setUserPassword}
+      handleSubmit={processLogin}
     />
   );
 };
