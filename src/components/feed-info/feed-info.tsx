@@ -2,16 +2,16 @@ import { FC } from 'react';
 import { TOrder } from '@utils-types';
 import { FeedInfoUI } from '../ui/feed-info';
 import { getFeedOrders, getTotal, getTotalToday } from '../state-managers';
-import { useAppSelector } from '../../services/store';
+import { useSelector } from '../../services/store';
 const extractOrderNumbers = (orders: TOrder[], status: string): number[] =>
   orders
     .filter((order) => order.status === status)
     .map((order) => order.number)
     .slice(0, 20);
 export const FeedInfo: FC = () => {
-  const allOrders: TOrder[] = useAppSelector(getFeedOrders);
-  const totalOrders = useAppSelector(getTotal);
-  const todayOrders = useAppSelector(getTotalToday);
+  const allOrders: TOrder[] = useSelector(getFeedOrders);
+  const totalOrders = useSelector(getTotal);
+  const todayOrders = useSelector(getTotalToday);
   const feedStatistics = {
     orders: allOrders,
     total: totalOrders,

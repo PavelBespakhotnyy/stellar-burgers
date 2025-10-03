@@ -1,5 +1,5 @@
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
-import { useAppSelector, useDispatch } from '../../services/store';
+import { useSelector, useDispatch } from '../../services/store';
 import { Preloader } from '@ui';
 import { ProfileUI } from '@ui-pages';
 import { TUser } from '@utils-types';
@@ -10,8 +10,8 @@ import {
 } from '../../components/state-managers';
 export const Profile: FC = () => {
   const storeDispatch = useDispatch();
-  const currentUser = useAppSelector(getUser) as TUser;
-  const isProcessing = useAppSelector(getLoginUserRequest);
+  const currentUser = useSelector(getUser) as TUser;
+  const isProcessing = useSelector(getLoginUserRequest);
   const [userForm, setUserForm] = useState({
     name: currentUser?.name || '',
     email: currentUser?.email || '',

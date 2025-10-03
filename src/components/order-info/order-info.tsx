@@ -1,6 +1,6 @@
 import { FC, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch, useAppSelector } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
@@ -12,8 +12,8 @@ import {
 export const OrderInfo: FC = () => {
   const { number } = useParams();
   const storeDispatch = useDispatch();
-  const currentOrder = useAppSelector(getCurrentOrder);
-  const allIngredients: TIngredient[] = useAppSelector(getIngredientsSelector);
+  const currentOrder = useSelector(getCurrentOrder);
+  const allIngredients: TIngredient[] = useSelector(getIngredientsSelector);
   useEffect(() => {
     storeDispatch(fetchUserOrderByNumber(Number(number)));
   }, [storeDispatch, number]);
@@ -24,10 +24,10 @@ export const OrderInfo: FC = () => {
       [key: string]: TIngredient & { count: number };
     };
     const ingredientsWithCount = currentOrder.ingredients.reduce(
-      (acc: TIngredientsWithCount, itemId) => {
+      (acc: TIngredientsWithCount, itemId: string) => {
         if (!acc[itemId]) {
           const foundIngredient = allIngredients.find(
-            (ing) => ing._id === itemId
+            (ing: TIngredient) => ing._id === itemId
           );
           if (foundIngredient) {
             acc[itemId] = {
@@ -43,7 +43,8 @@ export const OrderInfo: FC = () => {
       {}
     );
     const orderTotal = Object.values(ingredientsWithCount).reduce(
-      (acc, item) => acc + item.price * item.count,
+      (acc: number, item: TIngredient & { count: number }) =>
+        acc + item.price * item.count,
       0
     );
     return {
