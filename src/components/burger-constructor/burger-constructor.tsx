@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { useDispatch, useAppSelector } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import {
   getConstructorItems,
   getOrderModalData,
@@ -14,10 +14,10 @@ import {
 export const BurgerConstructor: FC = () => {
   const router = useNavigate();
   const storeDispatch = useDispatch();
-  const selectedItems = useAppSelector(getConstructorItems);
-  const orderLoading = useAppSelector(getOrderRequest);
-  const orderData = useAppSelector(getOrderModalData);
-  const userAuthenticated = useAppSelector(getIsAuthenticated);
+  const selectedItems = useSelector(getConstructorItems);
+  const orderLoading = useSelector(getOrderRequest);
+  const orderData = useSelector(getOrderModalData);
+  const userAuthenticated = useSelector(getIsAuthenticated);
   const handleOrderClick = () => {
     if (!userAuthenticated) {
       return router('/login');
@@ -25,7 +25,9 @@ export const BurgerConstructor: FC = () => {
     if (!selectedItems.bun || orderLoading) return;
     const orderIds = [
       selectedItems.bun._id,
-      ...selectedItems.ingredients.map((item) => item._id),
+      ...selectedItems.ingredients.map(
+        (item: TConstructorIngredient) => item._id
+      ),
       selectedItems.bun._id
     ];
     storeDispatch(createBurgerOrder(orderIds));

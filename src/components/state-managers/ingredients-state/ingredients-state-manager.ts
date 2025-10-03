@@ -18,6 +18,9 @@ interface IngredientsStateManager {
   hasError: boolean;
 }
 
+// add jest and e2e compatibility aliases
+export interface IngredientsState extends IngredientsStateManager {}
+
 export const initialIngredientsState: IngredientsStateManager = {
   buns: [],
   mains: [],
@@ -27,6 +30,9 @@ export const initialIngredientsState: IngredientsStateManager = {
   isLoading: false,
   hasError: false
 };
+
+// add jest and e2e compatibility aliases
+export const initialState: IngredientsState = initialIngredientsState;
 const ingredientsStateManager = createSlice({
   name: 'ingredientsState',
   initialState: initialIngredientsState,
@@ -78,6 +84,12 @@ export const {
   setIsLoading,
   setSelectedIngredient
 } = ingredientsStateManager.actions;
+
+// add jest and e2e compatibility aliases for actions and thunk
+export const setBuns = setBunItems;
+export const setMains = setMainItems;
+export const setSauces = setSauceItems;
+export const getIngredients = fetchAllIngredients;
 export const { getIngredientsSelector, getIsLoading } =
   ingredientsStateManager.selectors;
 export default ingredientsStateManager.reducer;
